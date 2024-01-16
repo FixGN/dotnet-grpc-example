@@ -1,0 +1,99 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "GrpcExample.Api";
+
+import "google/api/annotations.proto";
+
+package todoit;
+
+service ToDoIt {
+  // Create
+  rpc CreateToDo (CreateToDoRequest) returns (CreateToDoResponse) {
+    option (google.api.http) = {
+      post: "/v1/todo",
+      // It means, that everything for the body pass through to our request
+      body: "*"
+    };
+  }
+
+  // Read single
+  rpc ReadToDo (ReadToDoRequest) returns (ReadToDoResponse) {
+    option (google.api.http) = {
+      get: "/v1/todo/{id}"
+    };
+  }
+
+  // Read list
+  // We will create very simple endpoint, which returns all values
+  // without filtering
+  rpc ListToDo (ListToDoRequest) returns (ListToDoResponse) {
+    option (google.api.http) = {
+      // Type of request: "route"
+      get: "/v1/todo"
+    };
+  }
+  
+  // Update
+  rpc UpdateToDo (UpdateToDoRequest) returns (UpdateToDoResponse) {
+    option (google.api.http) = {
+      // We won't to use id in the path, because we specified it in the body
+      put: "/v1/todo",
+      body: "*"
+    };
+  }
+  
+  // Delete
+  rpc DeleteToDo (DeleteToDoRequest) returns (DeleteToDoResponse) {
+    option (google.api.http) = {
+      delete: "/v1/todo/{id}"
+    };
+  }
+}
+
+message CreateToDoRequest {
+  // type name = position
+  string title = 1;
+  string description = 2;
+}
+
+message CreateToDoResponse {
+  int32 id = 1;
+}
+
+message ReadToDoRequest {
+  int32 id = 1;
+}
+
+message ReadToDoResponse {
+  int32 id = 1;
+  string title = 2;
+  string description = 3;
+  // we must name properties in snakecase for Protobuf file
+  string to_do_status = 4;
+}
+
+message ListToDoRequest {}
+
+message ListToDoResponse {
+  // Repeated helps us to reuse already created messages
+  repeated ReadToDoResponse to_do = 1;
+}
+
+message UpdateToDoRequest {
+  int32 id = 1;
+  string title = 2;
+  string description = 3;
+  string to_do_status = 4;
+}
+
+message UpdateToDoResponse {
+  int32 id = 1;
+}
+
+message DeleteToDoRequest {
+  int32 id = 1;
+}
+
+message DeleteToDoResponse {
+  int32 id = 1;
+}
